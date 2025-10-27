@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Changelogs - Countries States Cities Database</title>
+    <title>Changelogs - Countries States Cities Database</title>
     <meta name="description" content="Browse complete change history for the World Countries, States, Cities database">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,152 +15,177 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>🌍 Data Changelogs</h1>
-                <p class="subtitle">Complete change history for Countries, States & Cities</p>
+                <h1>🌍 Database Changelogs</h1>
+                <a href="https://github.com/dr5hn/countries-states-cities-database" class="main-site-link" target="_blank">
+                    View Main Project →
+                </a>
             </div>
-            <nav class="nav">
-                <a href="index.html" class="nav-link active">Home</a>
-                <a href="browse.html" class="nav-link">Browse</a>
-                <a href="timeline.html" class="nav-link">Timeline</a>
-                <a href="stats.html" class="nav-link">Statistics</a>
-                <a href="https://github.com/dr5hn/countries-states-cities-database" class="nav-link" target="_blank">GitHub</a>
-            </nav>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <h2>Track Every Data Change</h2>
-                <p class="hero-description">
-                    Explore the complete history of changes to our comprehensive geographic database.
-                    Every addition, update, and modification is tracked and documented.
-                </p>
-                <div class="hero-stats" id="heroStats">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalChanges">-</div>
-                        <div class="stat-label">Total Changes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalCountries">-</div>
-                        <div class="stat-label">Countries</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Months Retained</div>
-                    </div>
+        <!-- Search & Filter -->
+        <section class="search-section">
+            <div class="search-filter-wrapper">
+                <div class="search-group">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by country code (e.g., US, FR, IN)...">
                 </div>
-                <div class="hero-actions">
-                    <a href="browse.html" class="btn btn-primary">Browse Changes</a>
-                    <a href="#about" class="btn btn-secondary">Learn More</a>
+                <div class="filter-group">
+                    <label>Sort by</label>
+                    <select id="sortSelect" class="filter-select">
+                        <option value="changes-desc">Most Changes</option>
+                        <option value="changes-asc">Least Changes</option>
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                    </select>
                 </div>
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="features">
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>Search & Filter</h3>
-                    <p>Search changes by country, city name, or change type. Filter by date range or entity type.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Visual Timeline</h3>
-                    <p>Interactive timeline view shows how the database has evolved over time.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Statistics</h3>
-                    <p>Detailed statistics on changes by country, action type, and entity.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💾</div>
-                    <h3>JSON API</h3>
-                    <p>Access raw JSON data programmatically for integration into your applications.</p>
-                </div>
+        <!-- Changelogs List -->
+        <section id="changelogsList" class="changelogs-list">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading changelogs...</p>
             </div>
         </section>
-
-        <!-- About Section -->
-        <section id="about" class="about">
-            <h2>About This Project</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        This changelog system tracks every modification to the
-                        <a href="https://github.com/dr5hn/countries-states-cities-database" target="_blank">
-                            Countries States Cities Database
-                        </a>
-                        by analyzing git commit history.
-                    </p>
-                    <p>
-                        All changes are automatically extracted from the <code>world.sql</code> file and organized
-                        by country. Recent changes (last 24 months) are readily available, with older changes
-                        archived by year.
-                    </p>
-                    <h3>Data Retention</h3>
-                    <ul>
-                        <li><strong>Active:</strong> Last 24 months in main changelog files</li>
-                        <li><strong>Archived:</strong> Older changes organized by year</li>
-                        <li><strong>Format:</strong> Minified JSON with standard field names</li>
-                    </ul>
-                    <h3>API Access</h3>
-                    <p>All changelog data is available as JSON:</p>
-                    <pre><code>https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/changelogs-data/changelogs/countries/US.json</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <p>
-                    &copy; 2025 Countries States Cities Database
-                    | <a href="https://github.com/dr5hn/countries-states-cities-database">GitHub</a>
-                    | <a href="https://github.com/dr5hn/countries-states-cities-database/blob/master/LICENSE">MIT License</a>
-                </p>
-                <p class="footer-note">
-                    Last updated: <span id="lastUpdated">-</span>
-                </p>
-            </div>
-        </footer>
     </div>
 
-    <script src="js/app.js"></script>
     <script>
-        // Load stats on page load
+        // Try to load from relative path first, then fallback to GitHub
+        const possibleUrls = [
+            '../changelogs',  // Local relative path
+            'https://raw.githubusercontent.com/dr5hn/csc-changelog/main/changelogs',  // GitHub main branch
+        ];
+
+        let baseUrl = possibleUrls[0];
+        let allCountries = [];
+        let filteredCountries = [];
+
         document.addEventListener('DOMContentLoaded', () => {
-            loadStats();
+            loadChangelogs();
+            setupEventListeners();
         });
 
-        async function loadStats() {
-            try {
-                const baseUrl = 'https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/changelogs-data/changelogs';
-                const response = await fetch(`${baseUrl}/stats.json`);
-                const stats = await response.json();
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                filterAndDisplayCountries();
+            });
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                filterAndDisplayCountries();
+            });
+        }
 
-                // Update hero stats
-                if (stats.summary) {
-                    document.getElementById('totalChanges').textContent =
-                        stats.summary.total_changes.toLocaleString();
-                    document.getElementById('totalCountries').textContent =
-                        stats.summary.total_countries.toLocaleString();
-                }
+        async function loadChangelogs() {
+            for (let i = 0; i < possibleUrls.length; i++) {
+                try {
+                    baseUrl = possibleUrls[i];
+                    console.log(`Trying to load from: ${baseUrl}/stats.json`);
 
-                // Update last updated
-                if (stats.generated_at) {
-                    const date = new Date(stats.generated_at);
-                    document.getElementById('lastUpdated').textContent =
-                        date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
+                    const response = await fetch(`${baseUrl}/stats.json`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const stats = await response.json();
+
+                    if (stats.by_country) {
+                        allCountries = Object.entries(stats.by_country).map(([code, data]) => ({
+                            code,
+                            ...data
+                        }));
+                        filterAndDisplayCountries();
+                        console.log(`Successfully loaded ${allCountries.length} countries`);
+                        return; // Success, exit the loop
+                    }
+                } catch (error) {
+                    console.error(`Failed to load from ${baseUrl}:`, error);
+                    // Continue to next URL
                 }
-            } catch (error) {
-                console.error('Error loading stats:', error);
             }
+
+            // If we get here, all URLs failed
+            console.error('All URLs failed to load changelogs');
+            document.getElementById('changelogsList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⚠️</div>
+                    <p>Failed to load changelogs. Please try again later.</p>
+                    <p style="font-size: 0.875rem; margin-top: 1rem;">Check the browser console for details.</p>
+                </div>
+            `;
+        }
+
+        function filterAndDisplayCountries() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            // Filter
+            filteredCountries = allCountries.filter(country =>
+                country.code.toLowerCase().includes(searchTerm)
+            );
+
+            // Sort
+            filteredCountries.sort((a, b) => {
+                switch(sortBy) {
+                    case 'changes-desc':
+                        return b.total_changes - a.total_changes;
+                    case 'changes-asc':
+                        return a.total_changes - b.total_changes;
+                    case 'name-asc':
+                        return a.code.localeCompare(b.code);
+                    case 'name-desc':
+                        return b.code.localeCompare(a.code);
+                    default:
+                        return 0;
+                }
+            });
+
+            displayCountries();
+        }
+
+        function displayCountries() {
+            const container = document.getElementById('changelogsList');
+
+            if (filteredCountries.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>No countries found matching your search.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredCountries.map(country => `
+                <div class="changelog-card">
+                    <div class="card-header">
+                        <h3 class="card-title">${country.code}</h3>
+                        <span class="country-total">${country.total_changes.toLocaleString()} changes</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            ${formatActions(country.actions)}
+                        </div>
+                        <div class="stat-row">
+                            ${formatEntities(country.entities)}
+                        </div>
+                        <a href="${baseUrl}/countries/${country.code}.json" class="btn btn-primary btn-sm" target="_blank">
+                            View JSON →
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatActions(actions) {
+            return Object.entries(actions || {}).map(([action, count]) => {
+                const badgeClass = action === 'add' ? 'badge-add' : action === 'update' ? 'badge-update' : 'badge-delete';
+                return `<span class="badge ${badgeClass}">${action}: ${count.toLocaleString()}</span>`;
+            }).join('');
+        }
+
+        function formatEntities(entities) {
+            return Object.entries(entities || {}).map(([entity, count]) =>
+                `<span class="entity-stat">${entity}: ${count.toLocaleString()}</span>`
+            ).join('');
         }
     </script>
 </body>
