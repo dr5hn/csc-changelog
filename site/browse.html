@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Changelogs - Countries States Cities Database</title>
+    <meta name="description" content="Browse changelogs by country and search for specific changes">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .country-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .country-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .country-flag {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .country-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .country-code {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .country-changes {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .changes-list {
+            margin-top: 2rem;
+        }
+
+        .change-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .change-card.add {
+            border-left-color: var(--success-color);
+        }
+
+        .change-card.update {
+            border-left-color: var(--warning-color);
+        }
+
+        .change-card.delete {
+            border-left-color: var(--danger-color);
+        }
+
+        .change-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .change-entity {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .change-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .change-message {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .change-details {
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .change-details pre {
+            margin: 0;
+            overflow-x: auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🌍 Data Changelogs</h1>
+                <p class="subtitle">Complete change history for Countries, States & Cities</p>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="browse.html" class="nav-link active">Browse</a>
+                <a href="timeline.html" class="nav-link">Timeline</a>
+                <a href="stats.html" class="nav-link">Statistics</a>
+                <a href="https://github.com/dr5hn/countries-states-cities-database" class="nav-link" target="_blank">GitHub</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Country List View -->
+            <div id="countryListView">
+                <section class="search-section">
+                    <h2>Browse by Country</h2>
+                    <div class="search-box">
+                        <input
+                            type="text"
+                            id="countrySearch"
+                            class="search-input"
+                            placeholder="Search countries..."
+                        >
+                    </div>
+                </section>
+
+                <div id="loadingCountries" class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading countries...</p>
+                </div>
+
+                <div id="countryGrid" class="country-grid" style="display: none;">
+                    <!-- Countries will be loaded here -->
+                </div>
+
+                <div id="emptyCountries" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>No countries found matching your search.</p>
+                </div>
+            </div>
+
+            <!-- Country Detail View -->
+            <div id="countryDetailView" style="display: none;">
+                <a href="#" class="back-link" onclick="showCountryList(); return false;">
+                    ← Back to countries
+                </a>
+
+                <section class="search-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 id="countryDetailName">-</h2>
+                            <p style="color: var(--text-muted); margin-top: 0.25rem;">
+                                <span id="countryDetailCount">0</span> changes
+                            </p>
+                        </div>
+                        <div class="filter-section">
+                            <div class="filter-group">
+                                <label for="actionFilter">Action</label>
+                                <select id="actionFilter" class="filter-select">
+                                    <option value="">All</option>
+                                    <option value="add">Add</option>
+                                    <option value="update">Update</option>
+                                    <option value="delete">Delete</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="entityFilter">Entity</label>
+                                <select id="entityFilter" class="filter-select">
+                                    <option value="">All</option>
+                                    <option value="city">City</option>
+                                    <option value="state">State</option>
+                                    <option value="country">Country</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-box" style="margin-top: 1rem;">
+                        <input
+                            type="text"
+                            id="changeSearch"
+                            class="search-input"
+                            placeholder="Search changes..."
+                        >
+                    </div>
+                </section>
+
+                <div id="loadingChanges" class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading changes...</p>
+                </div>
+
+                <div id="changesList" class="changes-list">
+                    <!-- Changes will be loaded here -->
+                </div>
+
+                <div id="emptyChanges" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📝</div>
+                    <p>No changes found matching your filters.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>
+                    &copy; 2025 Countries States Cities Database
+                    | <a href="https://github.com/dr5hn/countries-states-cities-database">GitHub</a>
+                    | <a href="https://github.com/dr5hn/countries-states-cities-database/blob/master/LICENSE">MIT License</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/browse.js"></script>
+</body>
+</html>

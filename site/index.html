@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Changelogs - Countries States Cities Database</title>
+    <meta name="description" content="Browse complete change history for the World Countries, States, Cities database">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🌍 Data Changelogs</h1>
+                <p class="subtitle">Complete change history for Countries, States & Cities</p>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="browse.html" class="nav-link">Browse</a>
+                <a href="timeline.html" class="nav-link">Timeline</a>
+                <a href="stats.html" class="nav-link">Statistics</a>
+                <a href="https://github.com/dr5hn/countries-states-cities-database" class="nav-link" target="_blank">GitHub</a>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Track Every Data Change</h2>
+                <p class="hero-description">
+                    Explore the complete history of changes to our comprehensive geographic database.
+                    Every addition, update, and modification is tracked and documented.
+                </p>
+                <div class="hero-stats" id="heroStats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalChanges">-</div>
+                        <div class="stat-label">Total Changes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCountries">-</div>
+                        <div class="stat-label">Countries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Months Retained</div>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="browse.html" class="btn btn-primary">Browse Changes</a>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Search & Filter</h3>
+                    <p>Search changes by country, city name, or change type. Filter by date range or entity type.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Visual Timeline</h3>
+                    <p>Interactive timeline view shows how the database has evolved over time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Statistics</h3>
+                    <p>Detailed statistics on changes by country, action type, and entity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>JSON API</h3>
+                    <p>Access raw JSON data programmatically for integration into your applications.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <h2>About This Project</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        This changelog system tracks every modification to the
+                        <a href="https://github.com/dr5hn/countries-states-cities-database" target="_blank">
+                            Countries States Cities Database
+                        </a>
+                        by analyzing git commit history.
+                    </p>
+                    <p>
+                        All changes are automatically extracted from the <code>world.sql</code> file and organized
+                        by country. Recent changes (last 24 months) are readily available, with older changes
+                        archived by year.
+                    </p>
+                    <h3>Data Retention</h3>
+                    <ul>
+                        <li><strong>Active:</strong> Last 24 months in main changelog files</li>
+                        <li><strong>Archived:</strong> Older changes organized by year</li>
+                        <li><strong>Format:</strong> Minified JSON with standard field names</li>
+                    </ul>
+                    <h3>API Access</h3>
+                    <p>All changelog data is available as JSON:</p>
+                    <pre><code>https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/changelogs-data/changelogs/countries/US.json</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>
+                    &copy; 2025 Countries States Cities Database
+                    | <a href="https://github.com/dr5hn/countries-states-cities-database">GitHub</a>
+                    | <a href="https://github.com/dr5hn/countries-states-cities-database/blob/master/LICENSE">MIT License</a>
+                </p>
+                <p class="footer-note">
+                    Last updated: <span id="lastUpdated">-</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+        });
+
+        async function loadStats() {
+            try {
+                const baseUrl = 'https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/changelogs-data/changelogs';
+                const response = await fetch(`${baseUrl}/stats.json`);
+                const stats = await response.json();
+
+                // Update hero stats
+                if (stats.summary) {
+                    document.getElementById('totalChanges').textContent =
+                        stats.summary.total_changes.toLocaleString();
+                    document.getElementById('totalCountries').textContent =
+                        stats.summary.total_countries.toLocaleString();
+                }
+
+                // Update last updated
+                if (stats.generated_at) {
+                    const date = new Date(stats.generated_at);
+                    document.getElementById('lastUpdated').textContent =
+                        date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+    </script>
+</body>
+</html>
